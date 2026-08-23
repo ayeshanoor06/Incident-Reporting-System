@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "40239342120",
+    "project_id": "incident-reporting-syste-3e258",
+    "storage_bucket": "incident-reporting-syste-3e258.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:40239342120:android:675be4deb6a1e7a3fd8b1d",
+        "android_client_info": {
+          "package_name": "com.ayesha.incidentreportingsystem"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBUijpI9PWHaOCYO7tbG6xRaPosjbysoyI"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
