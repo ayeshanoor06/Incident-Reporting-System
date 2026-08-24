@@ -42,5 +42,35 @@ class ReportIncidentActivity : AppCompatActivity() {
         buttonSelectScreenshot.setOnClickListener {
             imagePickerLauncher.launch("image/*")
         }
+
+        buttonSubmitIncident.setOnClickListener {
+            validateIncidentForm()
+        }
+    }
+
+    private fun validateIncidentForm() {
+
+        val description = editTextDescription.text.toString().trim()
+
+        if (description.isEmpty()) {
+            editTextDescription.error = "Please describe the issue"
+            editTextDescription.requestFocus()
+            return
+        }
+
+        if (selectedImageUri == null) {
+            android.widget.Toast.makeText(
+                this,
+                "Please select a screenshot",
+                android.widget.Toast.LENGTH_SHORT
+            ).show()
+            return
+        }
+
+        android.widget.Toast.makeText(
+            this,
+            "Incident information is valid",
+            android.widget.Toast.LENGTH_SHORT
+        ).show()
     }
 }
