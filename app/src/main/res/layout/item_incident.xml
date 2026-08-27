@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:background="@color/surface"
+    android:padding="18dp"
+    android:layout_marginBottom="12dp">
+
+    <TextView
+        android:id="@+id/textViewIncidentId"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="INC-XXXXXX"
+        android:textColor="@color/text_primary"
+        android:textSize="18sp"
+        android:textStyle="bold"
+        android:layout_marginBottom="8dp" />
+
+    <TextView
+        android:id="@+id/textViewIncidentDescription"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Incident description"
+        android:textColor="@color/text_secondary"
+        android:textSize="15sp"
+        android:layout_marginBottom="12dp" />
+
+    <TextView
+        android:id="@+id/textViewIncidentStatus"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Pending"
+        android:textColor="@color/accent_terracotta"
+        android:textSize="15sp"
+        android:textStyle="bold" />
+
+    <TextView
+        android:id="@+id/textViewIncidentDate"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Date"
+        android:textColor="@color/text_secondary"
+        android:textSize="13sp"
+        android:layout_marginTop="8dp" />
+
+</LinearLayout>
