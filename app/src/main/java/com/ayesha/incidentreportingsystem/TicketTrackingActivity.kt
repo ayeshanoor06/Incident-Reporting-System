@@ -6,6 +6,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.firestore.ListenerRegistration
 
 class TicketTrackingActivity : AppCompatActivity() {
 
@@ -16,6 +17,8 @@ class TicketTrackingActivity : AppCompatActivity() {
     private val incidentList = mutableListOf<Incident>()
 
     private lateinit var incidentAdapter: IncidentAdapter
+
+    private var incidentListener: ListenerRegistration? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -28,43 +31,64 @@ class TicketTrackingActivity : AppCompatActivity() {
         recyclerViewIncidents.layoutManager =
             LinearLayoutManager(this)
 
-        recyclerViewIncidents.adapter = incidentAdapter
+        recyclerViewIncidents.adapter =
+            incidentAdapter
 
-        loadIncidentsFromFirestore()
+        listenForIncidentUpdates()
     }
 
-    private fun loadIncidentsFromFirestore() {
+    private fun listenForIncidentUpdates() {
 
-        firestoreDatabase
+        incidentListener = firestoreDatabase
             .collection("incidents")
             .orderBy("createdAt")
-            .get()
-            .addOnSuccessListener { documents ->
+            .addSnapshotListener { documents, error ->
 
-                incidentList.clear()
+                if (error != null) {
 
-                for (document in documents) {
+                    Toast.makeText(
+                        this,
+                        "Failed to load incidents",
+                        Toast.LENGTH_SHORT
+                    ).show()
 
-                    val incident = Incident(
-                        incidentId = document.getString("incidentId") ?: "",
-                        description = document.getString("description") ?: "",
-                        imageUrl = document.getString("imageUrl") ?: "",
-                        status = document.getString("status") ?: "Pending",
-                        createdAt = document.getTimestamp("createdAt")
-                    )
-
-                    incidentList.add(incident)
+                    return@addSnapshotListener
                 }
 
-                incidentAdapter.notifyDataSetChanged()
-            }
-            .addOnFailureListener {
+                if (documents != null) {
 
-                Toast.makeText(
-                    this,
-                    "Failed to load incidents",
-                    Toast.LENGTH_SHORT
-                ).show()
+                    incidentList.clear()
+
+                    for (document in documents) {
+
+                        val incident = Incident(
+                            incidentId =
+                                document.getString("incidentId") ?: "",
+
+                            description =
+                                document.getString("description") ?: "",
+
+                            imageUrl =
+                                document.getString("imageUrl") ?: "",
+
+                            status =
+                                document.getString("status") ?: "Pending",
+
+                            createdAt =
+                                document.getTimestamp("createdAt")
+                        )
+
+                        incidentList.add(incident)
+                    }
+
+                    incidentAdapter.notifyDataSetChanged()
+                }
             }
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+
+        incidentListener?.remove()
     }
 }
