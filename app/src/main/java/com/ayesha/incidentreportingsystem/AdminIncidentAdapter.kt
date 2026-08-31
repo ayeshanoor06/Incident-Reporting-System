@@ -1,10 +1,13 @@
 package com.ayesha.incidentreportingsystem
 
+import android.graphics.BitmapFactory
+import android.util.Base64
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ArrayAdapter
 import android.widget.Button
+import android.widget.ImageView
 import android.widget.Spinner
 import android.widget.TextView
 import android.widget.Toast
@@ -15,7 +18,8 @@ class AdminIncidentAdapter(
     private val incidentList: MutableList<Incident>
 ) : RecyclerView.Adapter<AdminIncidentAdapter.AdminIncidentViewHolder>() {
 
-    private val firestoreDatabase = FirebaseFirestore.getInstance()
+    private val firestoreDatabase =
+        FirebaseFirestore.getInstance()
 
     private val statusOptions = arrayOf(
         "Pending",
@@ -23,19 +27,34 @@ class AdminIncidentAdapter(
         "Resolved"
     )
 
-    class AdminIncidentViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
+    class AdminIncidentViewHolder(
+        itemView: View
+    ) : RecyclerView.ViewHolder(itemView) {
 
         val textViewAdminIncidentId: TextView =
-            itemView.findViewById(R.id.textViewAdminIncidentId)
+            itemView.findViewById(
+                R.id.textViewAdminIncidentId
+            )
 
         val textViewAdminIncidentDescription: TextView =
-            itemView.findViewById(R.id.textViewAdminIncidentDescription)
+            itemView.findViewById(
+                R.id.textViewAdminIncidentDescription
+            )
+
+        val imageViewAdminIncidentScreenshot: ImageView =
+            itemView.findViewById(
+                R.id.imageViewAdminIncidentScreenshot
+            )
 
         val spinnerIncidentStatus: Spinner =
-            itemView.findViewById(R.id.spinnerIncidentStatus)
+            itemView.findViewById(
+                R.id.spinnerIncidentStatus
+            )
 
         val buttonUpdateIncidentStatus: Button =
-            itemView.findViewById(R.id.buttonUpdateIncidentStatus)
+            itemView.findViewById(
+                R.id.buttonUpdateIncidentStatus
+            )
     }
 
     override fun onCreateViewHolder(
@@ -44,7 +63,11 @@ class AdminIncidentAdapter(
     ): AdminIncidentViewHolder {
 
         val view = LayoutInflater.from(parent.context)
-            .inflate(R.layout.item_admin_incident, parent, false)
+            .inflate(
+                R.layout.item_admin_incident,
+                parent,
+                false
+            )
 
         return AdminIncidentViewHolder(view)
     }
@@ -56,8 +79,16 @@ class AdminIncidentAdapter(
 
         val incident = incidentList[position]
 
-        holder.textViewAdminIncidentId.text = incident.incidentId
-        holder.textViewAdminIncidentDescription.text = incident.description
+        holder.textViewAdminIncidentId.text =
+            incident.incidentId
+
+        holder.textViewAdminIncidentDescription.text =
+            incident.description
+
+        displayIncidentScreenshot(
+            holder.imageViewAdminIncidentScreenshot,
+            incident.imageUrl
+        )
 
         val statusAdapter = ArrayAdapter(
             holder.itemView.context,
@@ -69,24 +100,80 @@ class AdminIncidentAdapter(
             android.R.layout.simple_spinner_dropdown_item
         )
 
-        holder.spinnerIncidentStatus.adapter = statusAdapter
+        holder.spinnerIncidentStatus.adapter =
+            statusAdapter
 
-        val currentStatusPosition = statusOptions.indexOf(incident.status)
+        val currentStatusPosition =
+            statusOptions.indexOf(incident.status)
 
         if (currentStatusPosition >= 0) {
-            holder.spinnerIncidentStatus.setSelection(currentStatusPosition)
+
+            holder.spinnerIncidentStatus.setSelection(
+                currentStatusPosition
+            )
         }
 
         holder.buttonUpdateIncidentStatus.setOnClickListener {
 
             val selectedStatus =
-                holder.spinnerIncidentStatus.selectedItem.toString()
+                holder.spinnerIncidentStatus
+                    .selectedItem
+                    .toString()
 
             updateIncidentStatus(
                 incident,
                 selectedStatus,
                 holder.itemView
             )
+        }
+    }
+
+    private fun displayIncidentScreenshot(
+        imageViewAdminIncidentScreenshot: ImageView,
+        imageUrl: String
+    ) {
+
+        if (imageUrl.isEmpty()) {
+
+            imageViewAdminIncidentScreenshot.visibility =
+                View.GONE
+
+            return
+        }
+
+        try {
+
+            val imageBytes =
+                Base64.decode(
+                    imageUrl,
+                    Base64.DEFAULT
+                )
+
+            val bitmap =
+                BitmapFactory.decodeByteArray(
+                    imageBytes,
+                    0,
+                    imageBytes.size
+                )
+
+            if (bitmap != null) {
+
+                imageViewAdminIncidentScreenshot.visibility =
+                    View.VISIBLE
+
+                imageViewAdminIncidentScreenshot
+                    .setImageBitmap(bitmap)
+
+            } else {
+
+                imageViewAdminIncidentScreenshot.visibility =
+                    View.GONE
+            }
+
+        } catch (exception: Exception) {
+
+            imageViewAdminIncidentScreenshot.visibility =
+                View.GONE
         }
     }
 
@@ -98,7 +185,10 @@ class AdminIncidentAdapter(
 
         firestoreDatabase
             .collection("incidents")
-            .whereEqualTo("incidentId", incident.incidentId)
+            .whereEqualTo(
+                "incidentId",
+                incident.incidentId
+            )
             .get()
             .addOnSuccessListener { documents ->
 
@@ -113,21 +203,30 @@ class AdminIncidentAdapter(
                     return@addOnSuccessListener
                 }
 
-                val document = documents.documents[0]
+                val document =
+                    documents.documents[0]
 
                 document.reference
-                    .update("status", selectedStatus)
+                    .update(
+                        "status",
+                        selectedStatus
+                    )
                     .addOnSuccessListener {
 
-                        incidentList[
+                        val incidentIndex =
                             incidentList.indexOf(incident)
-                        ] = incident.copy(
-                            status = selectedStatus
-                        )
 
-                        notifyItemChanged(
-                            incidentList.indexOf(incident)
-                        )
+                        if (incidentIndex >= 0) {
+
+                            incidentList[incidentIndex] =
+                                incident.copy(
+                                    status = selectedStatus
+                                )
+
+                            notifyItemChanged(
+                                incidentIndex
+                            )
+                        }
 
                         Toast.makeText(
                             itemView.context,
