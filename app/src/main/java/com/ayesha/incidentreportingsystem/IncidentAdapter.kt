@@ -1,8 +1,11 @@
 package com.ayesha.incidentreportingsystem
 
+import android.graphics.BitmapFactory
+import android.util.Base64
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ImageView
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.google.firebase.Timestamp
@@ -29,6 +32,9 @@ class IncidentAdapter(
         val textViewIncidentDescription: TextView =
             itemView.findViewById(R.id.textViewIncidentDescription)
 
+        val imageViewIncidentScreenshot: ImageView =
+            itemView.findViewById(R.id.imageViewIncidentScreenshot)
+
         val textViewIncidentStatus: TextView =
             itemView.findViewById(R.id.textViewIncidentStatus)
 
@@ -54,9 +60,57 @@ class IncidentAdapter(
 
         val incident = incidentList[position]
 
-        holder.textViewIncidentId.text = incident.incidentId
-        holder.textViewIncidentDescription.text = incident.description
-        holder.textViewIncidentStatus.text = incident.status
+        holder.textViewIncidentId.text =
+            incident.incidentId
+
+        holder.textViewIncidentDescription.text =
+            incident.description
+
+        holder.textViewIncidentStatus.text =
+            incident.status
+
+        if (incident.imageUrl.isNotEmpty()) {
+
+            try {
+
+                val imageBytes =
+                    Base64.decode(
+                        incident.imageUrl,
+                        Base64.DEFAULT
+                    )
+
+                val bitmap =
+                    BitmapFactory.decodeByteArray(
+                        imageBytes,
+                        0,
+                        imageBytes.size
+                    )
+
+                if (bitmap != null) {
+
+                    holder.imageViewIncidentScreenshot.visibility =
+                        View.VISIBLE
+
+                    holder.imageViewIncidentScreenshot
+                        .setImageBitmap(bitmap)
+
+                } else {
+
+                    holder.imageViewIncidentScreenshot.visibility =
+                        View.GONE
+                }
+
+            } catch (exception: Exception) {
+
+                holder.imageViewIncidentScreenshot.visibility =
+                    View.GONE
+            }
+
+        } else {
+
+            holder.imageViewIncidentScreenshot.visibility =
+                View.GONE
+        }
 
         if (incident.createdAt != null) {
 
@@ -66,11 +120,14 @@ class IncidentAdapter(
             )
 
             holder.textViewIncidentDate.text =
-                dateFormat.format(incident.createdAt.toDate())
+                dateFormat.format(
+                    incident.createdAt.toDate()
+                )
 
         } else {
 
-            holder.textViewIncidentDate.text = "Date unavailable"
+            holder.textViewIncidentDate.text =
+                "Date unavailable"
         }
     }
 

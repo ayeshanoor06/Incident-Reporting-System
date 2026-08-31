@@ -27,6 +27,14 @@
         android:textSize="15sp"
         android:layout_marginBottom="12dp" />
 
+    <ImageView
+        android:id="@+id/imageViewIncidentScreenshot"
+        android:layout_width="match_parent"
+        android:layout_height="200dp"
+        android:layout_marginBottom="12dp"
+        android:scaleType="centerInside"
+        android:contentDescription="Incident screenshot" />
+
     <TextView
         android:id="@+id/textViewIncidentStatus"
         android:layout_width="wrap_content"
