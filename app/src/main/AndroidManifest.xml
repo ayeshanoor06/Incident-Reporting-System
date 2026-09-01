@@ -12,6 +12,13 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.IncidentReportingSystem">
         <activity
+            android:name=".RegisterActivity"
+            android:exported="false" />
+
+        <activity
+            android:name=".MainActivity"
+            android:exported="false" />
+        <activity
             android:name=".AdminActivity"
             android:exported="false" />
         <activity
@@ -21,7 +28,7 @@
             android:name=".ReportIncidentActivity"
             android:exported="false" />
         <activity
-            android:name=".MainActivity"
+            android:name=".LoginActivity"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
