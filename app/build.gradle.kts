@@ -50,4 +50,7 @@ dependencies {
     implementation(libs.firebase.storage)
 
     implementation(libs.glide)
+
+    implementation(platform("com.google.firebase:firebase-bom:34.18.0"))
+    implementation(libs.firebase.auth)
 }
